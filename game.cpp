@@ -12,6 +12,7 @@ void game(int number[]);
 
 int main() {
 
+    system("cls");
     box(50,7);
     gotoXY(25, 4);
 
@@ -85,7 +86,7 @@ void box(int width, int length){
             }
             gotoXY(x, y);
             cout << symbol;
-            Sleep(10);
+            Sleep(5);
             numPrinted++;
         }
     }

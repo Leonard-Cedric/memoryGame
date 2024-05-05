@@ -11,74 +11,77 @@ using namespace std;
 
 string welcome_part();
 int pickMode ();
+
 int game_num(int arr_delay[], int arr_score_level[]);
-void game_word ();
-void box(int width, int length, bool hasDelay);
-void gotoXY(int x, int y) ;
+int game_word(int arr_delay[], int arr_score_level[]);
+
+void genNum(int arr[], int index_pointer, int maxNum, int divisor);
 bool is_number_exist(int arr[], int arra_size, int number);
 int random_number(int max, int divisor);
-void genNum(int arr[], int array_size, int maxNum, int divisor);
-int openFile(string words[]);
-void displayNum(int arr[], int arr_size, int level, int arr_delay[]);
-void displayWord(string words[], int arr[], int arr_size, int level);
-int get_num_score(int arr[], int arr_size, int level, int arr_score_level[]);
-void show_score(int score_num, int level);
-void highest_score(string player_name, int score_num);
-void display (int column, int row, string message);
 
-int const MAX_LEVEL = 5;
+void displayNum(int arr_random_num[], int arr_size, int level, int arr_delay[]);
+void displayWord(string words[], int arr_random_index[], int arr_size, int level, int arr_delay[]);
+
+int get_num_score(int arr_random_num[], int arr_size, int level, int arr_score_level[]);
+int get_word_score(string words[], int arr_random_index[], int arr_size, int level, int arr_score_level[]);
+
+void show_score(int score_num, int level);
+void show_player_score(string player, int final_score);
+
+int openFile(string words[]);
+void display (int column, int row, string message);
+void box(int width, int length, bool hasDelay);
+void gotoXY(int x, int y) ;
+
+int const MAX_LEVEL = 1;
 int const ARRAY_SIZE = 5;
 int const MAX_NUM= 100;
 int const DIVISOR= 100;
-
+                                
 int main() {
 
     int player_score = 0;
     
     int arr_delay_num[] = {2000, 1500, 1000, 800, 500};
-    int arr_delay_words[] = {4000, 3000, 2000, 1000, 500};
+    int arr_delay_words[] = {2500, 1800, 1500, 900, 600};
     int arr_score_level[] = {10, 20, 30, 40, 50};
     
     srand(time(0));
     
-    box(50,7, true);
-    string playerName = welcome_part();
-    
-    box(50,7,false);
-    int mode = pickMode();
+    char ans;
+    do{
+        box(50,7, true);
+        string playerName = welcome_part();
+        
+        box(50,7,false);
+        int mode = pickMode();
+        
+        box(50,7,false);
+        switch(mode){
+            case 1:
+                player_score = game_num(arr_delay_num, arr_score_level);
+                break;
+            case 2:
+                player_score = game_word(arr_delay_words, arr_score_level);
+                break;
+        }
+        show_player_score(playerName, player_score);
+        gotoXY(0, 10);
 
-    box(50,7,false);
-    switch(mode){
-        case 1:
-            player_score = game_num(arr_delay_num, arr_score_level);
-            // for(int i = 0; i < MAX_LEVEL; i++){
-            //     int arr_random_num[]= {-1,-1,-1,-1,-1};
-            //     genNum(arr_random_num, ARRAY_SIZE, MAX_NUM, DIVISOR);
-            //     displayNum(arr_random_num, ARRAY_SIZE, i, arr_delay_num);
-            //     player_score += get_num_score(arr_random_num, ARRAY_SIZE, i, arr_score_level);
-            //     show_score(player_score, i);
-            // }
-            break;
-        case 2:
-            string words[MAX_NUM];
-            int arr_max_index = openFile(words);
+        cout << "Do you want to Play Again? [Y/N] ";
+        cin >> ans;
+    }while (ans == 'y' || ans == 'Y');
 
-            for(int i = 0; i < MAX_LEVEL; i++){
-                int arr_random_index[]= {-1,-1,-1,-1,-1};
-                genNum(arr_random_index, arr_max_index, MAX_NUM, DIVISOR);
-                displayWord(words, arr_random_index, ARRAY_SIZE, i);
-                player_score += get_num_score(arr_random_index, ARRAY_SIZE, i, arr_score_level);
-                show_score(player_score, i);
-            }
-            break;
-    }
-
-    highest_score(playerName, player_score);
-    gotoXY(0, 25);
     return 0;
 }
 
-
+string welcome_part(){
+    string playerName;
+    display(14,3, "Welcome to Memory Game");
+    display(5,6, "Enter Player name: ");
+    cin >> playerName;
+    return playerName;
+}
 
 int pickMode (){
     int mode;
@@ -98,38 +101,41 @@ int pickMode (){
 
 int game_num(int arr_delay[], int arr_score_level[]){
     int player_score= 0;
-    for(int i = 0; i < MAX_LEVEL; i++){
+    for(int level = 0; level < MAX_LEVEL; level++){
         int arr_random_num[]= {-1,-1,-1,-1,-1};
         genNum(arr_random_num, ARRAY_SIZE, MAX_NUM, DIVISOR);
-        displayNum(arr_random_num, ARRAY_SIZE, i, arr_delay);
-        player_score += get_num_score(arr_random_num, ARRAY_SIZE, i, arr_score_level);
-        show_score(player_score, i);
+        displayNum(arr_random_num, ARRAY_SIZE, level, arr_delay);
+        player_score += get_num_score(arr_random_num, ARRAY_SIZE, level, arr_score_level);
+        show_score(player_score, level);
     }
     return player_score;
 }
 
-void game_word (){
-
-}
-
-string welcome_part(){
-    string playerName;
-    display(14,3, "Welcome to Memory Game");
-    display(5,6, "Enter Player name: ");
-    cin >> playerName;
-    return playerName;
-}
-
-
-bool is_number_exist(int arr[], int array_size, int number){
-    bool exist= false;
-
-    for(int i= 0; i<array_size; i++){ 
-       if (arr[i]==number)
-        return true;
+int game_word (int arr_delay[], int arr_score_level[]){
+    string words[MAX_NUM];
+    int player_score= 0;
+    int max_index_ctr = openFile(words);
+    
+    for(int level = 0; level < MAX_LEVEL; level++){
+        int arr_random_index[]= {-1,-1,-1,-1,-1};
+        genNum(arr_random_index, ARRAY_SIZE, max_index_ctr, DIVISOR);
+        displayWord(words, arr_random_index, ARRAY_SIZE, level, arr_delay);
+        player_score += get_word_score(words, arr_random_index, ARRAY_SIZE, level, arr_score_level);
+        show_score(player_score, level);
     }
+    return player_score;
+}
 
-    return exist;
+void genNum(int arr[], int array_size, int maxNum, int divisor) {
+    
+    for(int i=0; i<array_size; i++){
+        int number;
+        do{
+            number= random_number(maxNum, divisor);
+        }while (is_number_exist(arr, i, number));
+
+        arr[i] = number;
+    }
 }
 
 int random_number(int max, int divisor){
@@ -139,6 +145,98 @@ int random_number(int max, int divisor){
     }while(num > max);
 
     return num;
+}
+
+bool is_number_exist(int arr[], int index_pointer, int number){
+    bool exist= false;
+
+    for(int i= 0; i<index_pointer; i++){ 
+       if (arr[i]==number)
+        return true;
+    }
+
+    return exist;
+}
+
+void displayNum(int arr_random_num[], int arr_size, int level, int arr_delay[]) {
+    for(int i=0; i<arr_size; i++) {
+        display(25, 4, to_string(arr_random_num[i]));
+        gotoXY(0, 10);
+        Sleep(arr_delay[level]);
+        display(25, 4, "          ");
+    }
+}
+
+void displayWord(string words[], int arr_random_index[], int arr_size, int level, int arr_delay[]){
+    for(int i=0; i<arr_size; i++) {
+        display (22, 4, words[arr_random_index[i]]);
+        gotoXY(0, 10);
+        Sleep(arr_delay[level]);
+        display(25, 4, "          ");
+    }
+}
+
+
+int get_num_score(int arr_random_num[], int arr_size, int level, int arr_score_level[]){
+    int guess_num[arr_size];
+    int score_num = 0;
+    display (12, 2, "Enter numbers seen in order:");
+    
+    gotoXY(17, 4);
+    for (int i = 0; i < arr_size; i++){
+        cin >> guess_num[i];
+    }
+    for (int j = 0; j < arr_size; j++){
+        if (arr_random_num[j] == guess_num[j]){
+            score_num += arr_score_level[level];
+        }
+    }
+    
+    box(50,7,false);
+    return score_num;
+}
+
+int get_word_score(string words[], int arr_random_index[], int arr_size, int level, int arr_score_level[]){
+    string guess_word[arr_size];
+    int score = 0;
+    box(50,7,false);
+    display (12, 2, "Enter words seen in order:");
+    
+    gotoXY(8, 4);
+    for (int i = 0; i < arr_size; i++){
+        cin >> guess_word[i];
+    }
+
+    for (int j = 0; j < arr_size; j++){
+        if (words[arr_random_index[j]] == guess_word[j]){
+            score += arr_score_level[level];
+        }
+    }
+
+    box(50,7,false);
+    return score;
+}
+
+void show_score(int score_num, int level) {
+    display (19, 4, "Score: " + to_string(score_num));
+    Sleep(2000);
+    
+    box(50,7,false);
+    if (level < 4) {
+        display (16, 2, "Ready for Level " + to_string(level + 2));
+        display (11, 6, "Press enter key to continue.");
+        getch();
+    }
+    
+    box(50,7,false);
+}
+
+void show_player_score(string player, int final_score){
+    box(50,7,false);
+    display (18, 2, "Congratulations!  "); 
+    display (25, 3,  player);
+    display (15, 6, "Your final score is " + to_string (final_score));
+    gotoXY (0,10);
 }
 
 int openFile(string words[]) {
@@ -159,76 +257,6 @@ int openFile(string words[]) {
 
     return counter - 1;
 }
-
-void genNum(int arr[], int array_size, int maxNum, int divisor) {
-    
-    for(int i=0; i<array_size; i++){
-        int number;
-        do{
-            number= random_number(maxNum, divisor);
-        }while (is_number_exist(arr, array_size, number));
-
-        arr[i] = number;
-    }
-}
-
-void displayNum(int arr[], int arr_size, int level, int arr_delay[]) {
-    for(int i=0; i<arr_size; i++) {
-        gotoXY(25,4);
-        cout << arr[i];
-        Sleep(arr_delay[level]);
-        gotoXY(25,4);
-        cout << "          ";
-    }
-}
-
-void displayWord(string words[], int arr[], int arr_size, int level){
-
-}
-
-int get_num_score(int arr[], int arr_size, int level, int arr_score_level[]){
-    int guess_num[arr_size];
-    int score_num = 0;
-    display (12, 2, "Enter numbers seen in order:");
-    
-    gotoXY(17, 4);
-    for (int i = 0; i < arr_size; i++){
-        cin >> guess_num[i];
-    }
-    for (int j = 0; j < arr_size; j++){
-        if (arr[j] == guess_num[j]){
-            score_num += arr_score_level[j];
-        }
-    }
-    
-    box(50,7,false);
-    return score_num;
-}
-
-void show_score(int score_num, int level) {
-    display (19, 4, "Score: " + to_string(score_num));
-    Sleep(2000);
-    
-    box(50,7,false);
-    if (level < 4) {
-        display (16, 2, "Ready for Level " + to_string(level + 2));
-        display (11, 6, "Press enter key to continue.");
-        getch();
-    }
-    
-    box(50,7,false);
-}
-
- void highest_score(string player_name, int score_num) {
-//     display (1,2);
-//     cout << "Highest Scores: ";
-//     display(1,4);
-//     cout << "#1. " << player_name << " - " << score_num << " pts.";
-//     display(1,5);
-//     cout << "#2. ";
-//     display(1,6);
-//     cout << "#3. ";
- }
 
 void display (int column, int row, string message){
     gotoXY (column,row);

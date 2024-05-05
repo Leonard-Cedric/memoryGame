@@ -1,7 +1,6 @@
 {
   "version": "0.2.0",
   "configurations": [
-    
     {
       "name": "C/C++ Runner: Debug Session",
       "type": "cppdbg",
@@ -9,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/workspace/memoryGame/.vscode",
-      "program": "c:/workspace/memoryGame/.vscode/build/Debug/outDebug",
+      "cwd": "c:/workspace/memoryGame",
+      "program": "c:/workspace/memoryGame/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

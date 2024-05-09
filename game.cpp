@@ -29,11 +29,14 @@ void show_score(int score_num, int level);
 void show_player_score(string player, int final_score);
 
 int openFile(string words[]);
+
+void mechanics();
+
 void display (int column, int row, string message);
 void box(int width, int length, bool hasDelay);
 void gotoXY(int x, int y) ;
 
-int const MAX_LEVEL = 1;
+int const MAX_LEVEL = 5;
 int const ARRAY_SIZE = 5;
 int const MAX_NUM= 100;
 int const DIVISOR= 100;
@@ -53,6 +56,8 @@ int main() {
         box(50,7, true);
         string playerName = welcome_part();
         
+        mechanics();
+
         box(50,7,false);
         int mode = pickMode();
         
@@ -261,6 +266,23 @@ int openFile(string words[]) {
 void display (int column, int row, string message){
     gotoXY (column,row);
     cout << message;
+}
+
+void mechanics(){
+    box(65,14, true);
+    display(2,1, "How to play: ");
+    display(2,3, "Random numbers/words pop up in the screen");
+    display(2,4, "Try to remember as much as you can");
+    display(2,5, "Put the numbers/words in the order it appeared");
+    display(2,6, "Score will be determined by how many you get right and level");
+    display(2,7, "Score by level");
+    display(2,8, "	- level 1 - 1 correct answer = 10 pts");
+    display(2,9, "	- level 2 - 1 correct answer = 20 pts");
+    display(2,10, "	- level 3 - 1 correct answer = 30 pts");
+    display(2,11, "	- level 4 - 1 correct answer = 40 pts");
+    display(2,12, "	- level 5 - 1 correct answer = 50 pts");
+    display (20, 13, "Press enter key to continue.");
+    getch();
 }
 
 void box(int width, int length, bool hasDelay){
